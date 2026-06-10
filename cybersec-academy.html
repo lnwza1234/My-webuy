@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberPath — เรียน Cybersecurity ถูกกฎหมาย</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --bg2: #0f1520;
+    --bg3: #141c2e;
+    --panel: #111827;
+    --border: #1e2d45;
+    --cyan: #00d4ff;
+    --green: #00ff9d;
+    --yellow: #ffd166;
+    --red: #ff4d6d;
+    --purple: #b8a9ff;
+    --text: #c9d8f0;
+    --muted: #4a5f7a;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'IBM Plex Sans Thai', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,.015) 2px, rgba(0,212,255,.015) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,14,23,.92);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: .08em;
+  }
+  .logo span { color: var(--green); }
+  nav ul { display: flex; gap: 8px; list-style: none; }
+  nav ul li a {
+    font-family: var(--mono);
+    font-size: .75rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all .2s;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  nav ul li a:hover, nav ul li a.active {
+    color: var(--cyan);
+    background: rgba(0,212,255,.08);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 32px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--green);
+    background: rgba(0,255,157,.08);
+    border: 1px solid rgba(0,255,157,.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    letter-spacing: .08em;
+  }
+  .hero-badge::before { content: '●'; animation: blink 1.4s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 60%, var(--green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto 36px;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: .8rem;
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    transition: all .2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .btn-primary:hover { background: #33ddff; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,212,255,.3); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--cyan); background: rgba(0,212,255,.06); }
+
+  /* ── SECTIONS ── */
+  section { display: none; padding: 40px 24px 80px; max-width: 960px; margin: 0 auto; }
+  section.visible { display: block; }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--cyan);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: #e2ecff;
+  }
+
+  /* ── MODULES GRID ── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .module-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .module-card.cyan::before { background: var(--cyan); }
+  .module-card.green::before { background: var(--green); }
+  .module-card.yellow::before { background: var(--yellow); }
+  .module-card.purple::before { background: var(--purple); }
+  .module-card.red::before { background: var(--red); }
+  .module-card:hover { border-color: var(--cyan); transform: translateY(-2px); background: var(--bg3); }
+  .module-icon { font-size: 2rem; margin-bottom: 12px; }
+  .module-card h3 { font-size: 1rem; font-weight: 600; color: #e2ecff; margin-bottom: 6px; }
+  .module-card p { font-size: .82rem; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+  .module-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: .65rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: .04em;
+  }
+  .tag-easy { background: rgba(0,255,157,.1); color: var(--green); }
+  .tag-med { background: rgba(255,209,102,.1); color: var(--yellow); }
+  .tag-hard { background: rgba(255,77,109,.1); color: var(--red); }
+  .tag-tool { background: rgba(0,212,255,.1); color: var(--cyan); }
+
+  /* ── LESSON CONTENT ── */
+  .lesson-content { display: none; }
+  .lesson-content.visible { display: block; }
+  .lesson-back {
+    font-family: var(--mono);
+    font-size: .75rem;
+    color: var(--muted);
+    cursor: pointer;
+    margin-bottom: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+  .lesson-back:hover { color: var(--cyan); }
+  .lesson-body {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    line-height: 1.8;
+  }
+  .lesson-body h3 { color: var(--cyan); font-size: 1.1rem; margin: 24px 0 10px; }
+  .lesson-body h3:first-child { margin-top: 0; }
+  .lesson-body p { color: var(--text); margin-bottom: 12px; }
+  .lesson-body ul { padding-left: 20px; color: var(--text); }
+  .lesson-body ul li { margin-bottom: 6px; }
+  .lesson-body strong { color: var(--yellow); }
+  .lesson-body code {
+    font-family: var(--mono);
+    background: rgba(0,212,255,.08);
+    color: var(--cyan);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: .85em;
+  }
+  .lesson-body .warning {
+    background: rgba(255,209,102,.07);
+    border-left: 3px solid var(--yellow);
+    padding: 14px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-size: .9rem;
+    color: var(--yellow);
+  }
+  .lesson-body .info {
+    background: rgba(0,212,255,.07);
+    border-left: 3px solid var(--cyan);
+    padding: 14px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-size: .9rem;
+  }
+
+  /* ── TERMINAL ── */
+  .terminal-wrap {
+    background: #060a10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+    font-family: var(--mono);
+  }
+  .terminal-header {
+    background: var(--bg3);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28ca41; }
+  .terminal-title { font-size: .7rem; color: var(--muted); margin-left: auto; letter-spacing: .08em; }
+  .terminal-output {
+    padding: 16px;
+    min-height: 200px;
+    max-height: 360px;
+    overflow-y: auto;
+    font-size: .82rem;
+    line-height: 1.7;
+  }
+  .terminal-output::-webkit-scrollbar { width: 4px; }
+  .terminal-output::-webkit-scrollbar-track { background: transparent; }
+  .terminal-output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .t-line { color: var(--green); }
+  .t-out { color: var(--text); }
+  .t-err { color: var(--red); }
+  .t-info { color: var(--cyan); }
+  .t-warn { color: var(--yellow); }
+  .t-prompt { color: var(--muted); }
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  .terminal-prompt-label { color: var(--green); font-size: .82rem; white-space: nowrap; }
+  #termInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: .82rem;
+    caret-color: var(--green);
+  }
+  .terminal-hint {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 8px;
+    font-family: var(--mono);
+  }
+
+  /* ── TOOLS ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .tool-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: all .2s;
+  }
+  .tool-card:hover { border-color: var(--border); background: var(--bg3); }
+  .tool-card h3 {
+    font-family: var(--mono);
+    font-size: .9rem;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+  .tool-card .tool-desc { font-size: .82rem; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+  .tool-examples { display: flex; flex-direction: column; gap: 6px; }
+  .tool-cmd {
+    font-family: var(--mono);
+    font-size: .75rem;
+    background: rgba(0,212,255,.06);
+    border: 1px solid rgba(0,212,255,.1);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tool-cmd:hover { background: rgba(0,212,255,.12); color: var(--cyan); }
+  .tool-cmd .cmd-desc { color: var(--muted); font-size: .68rem; display: block; margin-top: 2px; }
+
+  /* ── QUIZ ── */
+  .quiz-wrap { max-width: 680px; }
+  .quiz-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+  .quiz-num {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+    letter-spacing: .1em;
+    margin-bottom: 12px;
+  }
+  .quiz-q {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e2ecff;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: .88rem;
+    color: var(--text);
+    transition: all .2s;
+    text-align: left;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--cyan); background: rgba(0,212,255,.06); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(0,255,157,.08); color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: rgba(255,77,109,.08); color: var(--red); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-explain {
+    display: none;
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 6px;
+    font-size: .85rem;
+    line-height: 1.6;
+  }
+  .quiz-explain.show { display: block; }
+  .quiz-explain.correct-e { background: rgba(0,255,157,.07); color: var(--green); border-left: 3px solid var(--green); }
+  .quiz-explain.wrong-e { background: rgba(255,77,109,.07); color: #ff9cb0; border-left: 3px solid var(--red); }
+  .quiz-score {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    text-align: center;
+    display: none;
+  }
+  .quiz-score.show { display: block; }
+  .score-num {
+    font-family: var(--mono);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 8px;
+  }
+  .score-label { color: var(--muted); margin-bottom: 24px; }
+  .progress-bar-wrap { background: var(--border); border-radius: 100px; height: 6px; margin-bottom: 24px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); border-radius: 100px; transition: width 1s ease; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 600px) {
+    nav ul { display: none; }
+    .hero { padding: 48px 20px 40px; }
+    .modules-grid, .tools-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Cyber<span>Path</span></div>
+  <ul>
+    <li><a href="#" class="active" onclick="showSection('home', this)">หน้าแรก</a></li>
+    <li><a href="#" onclick="showSection('modules', this)">บทเรียน</a></li>
+    <li><a href="#" onclick="showSection('terminal', this)">Terminal</a></li>
+    <li><a href="#" onclick="showSection('tools', this)">เครื่องมือ</a></li>
+    <li><a href="#" onclick="showSection('quiz', this)">ทดสอบ</a></li>
+  </ul>
+</nav>
+
+<!-- ── HOME ── -->
+<div id="home" class="visible">
+  <div class="hero">
+    <div class="hero-badge">Educational Platform · ถูกกฎหมาย 100%</div>
+    <h1>เรียน Cybersecurity<br>แบบมืออาชีพ</h1>
+    <p>เรียนรู้การป้องกันระบบ ทดลองใช้เครื่องมือจริง ฝึกในสภาพแวดล้อมจำลอง และทดสอบความรู้ด้วยแบบฝึกหัด</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#" onclick="showSection('modules', document.querySelectorAll('nav a')[1])">เริ่มเรียนเลย</a>
+      <a class="btn btn-ghost" href="#" onclick="showSection('terminal', document.querySelectorAll('nav a')[2])">เปิด Terminal</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODULES ── -->
+<section id="modules">
+  <div id="modules-list">
+    <div class="section-title">// บทเรียน</div>
+    <h2>เลือกหัวข้อที่จะเรียน</h2>
+    <div class="modules-grid">
+      <div class="module-card cyan" onclick="openLesson('recon')">
+        <div class="module-icon">🔍</div>
+        <h3>Reconnaissance</h3>
+        <p>การสำรวจข้อมูลเบื้องต้น เครื่องมือ OSINT และการเก็บข้อมูล target อย่างถูกกฎหมาย</p>
+        <div class="module-meta">
+          <span class="tag tag-easy">เริ่มต้น</span>
+          <span class="tag tag-tool">nmap · whois · shodan</span>
+        </div>
+      </div>
+      <div class="module-card green" onclick="openLesson('network')">
+        <div class="module-icon">🌐</div>
+        <h3>Network Security</h3>
+        <p>ทำความเข้าใจ TCP/IP, Firewall, IDS/IPS และการวิเคราะห์ traffic ด้วย Wireshark</p>
+        <div class="module-meta">
+          <span class="tag tag-med">กลาง</span>
+          <span class="tag tag-tool">wireshark · netstat</span>
+        </div>
+      </div>
+      <div class="module-card yellow" onclick="openLesson('webpen')">
+        <div class="module-icon">🕷️</div>
+        <h3>Web Penetration Testing</h3>
+        <p>OWASP Top 10, SQL Injection, XSS และการใช้ Burp Suite ในสภาพแวดล้อม lab</p>
+        <div class="module-meta">
+          <span class="tag tag-med">กลาง</span>
+          <span class="tag tag-tool">burpsuite · sqlmap</span>
+        </div>
+      </div>
+      <div class="module-card purple" onclick="openLesson('linux')">
+        <div class="module-icon">🐧</div>
+        <h3>Linux & Termux</h3>
+        <p>พื้นฐาน Linux สำหรับ security, การใช้ Termux บน Android และคำสั่งที่จำเป็น</p>
+        <div class="module-meta">
+          <span class="tag tag-easy">เริ่มต้น</span>
+          <span class="tag tag-tool">termux · bash</span>
+        </div>
+      </div>
+      <div class="module-card red" onclick="openLesson('crypto')">
+        <div class="module-icon">🔐</div>
+        <h3>Cryptography</h3>
+        <p>การเข้ารหัสข้อมูล, hashing, SSL/TLS และวิธีทดสอบการป้องกันข้อมูล</p>
+        <div class="module-meta">
+          <span class="tag tag-hard">ขั้นสูง</span>
+          <span class="tag tag-tool">openssl · hashcat</span>
+        </div>
+      </div>
+      <div class="module-card cyan" onclick="openLesson('ctf')">
+        <div class="module-icon">🏁</div>
+        <h3>CTF & Lab</h3>
+        <p>แหล่งฝึก Capture The Flag, HackTheBox, TryHackMe และวิธีเริ่มต้นสำหรับมือใหม่</p>
+        <div class="module-meta">
+          <span class="tag tag-easy">เริ่มต้น</span>
+          <span class="tag tag-tool">CTF platforms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson content panels -->
+  <div id="lesson-recon" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🔍 Reconnaissance คืออะไร?</h3>
+      <p>Reconnaissance หรือ "Recon" คือขั้นตอนแรกของ penetration testing — การเก็บข้อมูลเกี่ยวกับ target ก่อนจะทดสอบช่องโหว่ ทำได้ <strong>ถูกกฎหมาย</strong>เมื่อมีการอนุญาตหรือทดสอบในสภาพแวดล้อม lab</p>
+      <div class="warning">⚠️ ห้ามสแกน IP หรือ domain ของผู้อื่นโดยไม่ได้รับอนุญาต ถือเป็นความผิดตาม พ.ร.บ. คอมพิวเตอร์</div>
+      <h3>Passive Recon (ไม่สัมผัส target โดยตรง)</h3>
+      <ul>
+        <li><code>whois domain.com</code> — ดูข้อมูลเจ้าของโดเมน</li>
+        <li><code>nslookup domain.com</code> — ค้นหา DNS records</li>
+        <li>OSINT tools เช่น Shodan, Maltego, Google Dorks</li>
+        <li>Wayback Machine สำหรับดูหน้าเว็บเก่า</li>
+      </ul>
+      <h3>Active Recon (ต้องมีใบอนุญาต)</h3>
+      <ul>
+        <li><code>nmap -sV 192.168.1.1</code> — scan ports และ service version</li>
+        <li><code>nmap -A target</code> — aggressive scan (OS detection)</li>
+        <li><code>ping target</code> — ตรวจว่า host ออนไลน์ไหม</li>
+        <li><code>traceroute target</code> — ดูเส้นทาง network</li>
+      </ul>
+      <div class="info">💡 ฝึกได้ฟรีที่ <strong>scanme.nmap.org</strong> — เซิร์ฟเวอร์ที่ nmap ตั้งไว้สำหรับฝึกโดยเฉพาะ</div>
+      <h3>Google Dorks ที่ควรรู้</h3>
+      <ul>
+        <li><code>site:example.com</code> — ดูทุกหน้าของเว็บ</li>
+        <li><code>filetype:pdf site:example.com</code> — หาไฟล์ PDF</li>
+        <li><code>intitle:"index of"</code> — หา directory listing ที่เปิดไว้</li>
+        <li><code>inurl:admin</code> — หน้า admin ที่ expose</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="lesson-linux" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🐧 Linux สำหรับ Security</h3>
+      <p>Linux เป็น OS หลักที่ใช้ในวงการ cybersecurity เพราะยืดหยุ่น ควบคุมได้ลึก และมีเครื่องมือมากมาย Kali Linux และ Parrot OS เป็นตัวเลือกยอดนิยมสำหรับ pen tester</p>
+      <h3>คำสั่งพื้นฐานที่ต้องรู้</h3>
+      <ul>
+        <li><code>ls -la</code> — แสดงไฟล์ทั้งหมดรวม hidden files</li>
+        <li><code>chmod 755 file</code> — เปลี่ยน permission</li>
+        <li><code>find / -name "*.conf"</code> — ค้นหาไฟล์ config</li>
+        <li><code>grep -r "password" /etc/</code> — ค้นหา string ในไฟล์</li>
+        <li><code>ps aux</code> — ดู process ทั้งหมด</li>
+        <li><code>netstat -tulpn</code> — ดู port ที่เปิดอยู่</li>
+        <li><code>cat /etc/passwd</code> — ดูรายชื่อ user</li>
+        <li><code>sudo -l</code> — ดูสิทธิ์ sudo ของ user ปัจจุบัน</li>
+      </ul>
+      <h3>📱 Termux บน Android</h3>
+      <p>Termux คือ terminal emulator สำหรับ Android ที่ให้ใช้ Linux commands ได้โดยไม่ต้อง root</p>
+      <div class="info">💡 ดาวน์โหลด Termux ได้จาก <strong>F-Droid</strong> เท่านั้น (Play Store เวอร์ชันหมดอายุแล้ว)</div>
+      <h3>คำสั่ง Termux เริ่มต้น</h3>
+      <ul>
+        <li><code>pkg update && pkg upgrade</code> — อัปเดตแพ็กเกจ</li>
+        <li><code>pkg install nmap</code> — ติดตั้ง nmap</li>
+        <li><code>pkg install python</code> — ติดตั้ง Python</li>
+        <li><code>pkg install git</code> — ติดตั้ง git</li>
+        <li><code>termux-setup-storage</code> — เข้าถึง storage ของมือถือ</li>
+        <li><code>pkg install metasploit</code> — ติดตั้ง Metasploit (lab only)</li>
+      </ul>
+      <div class="warning">⚠️ เครื่องมือเหล่านี้ใช้ได้เฉพาะในสภาพแวดล้อม lab หรือระบบของตัวเองเท่านั้น</div>
+    </div>
+  </div>
+
+  <div id="lesson-webpen" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🕷️ OWASP Top 10</h3>
+      <p>OWASP Top 10 คือรายชื่อช่องโหว่เว็บที่พบบ่อยที่สุด เป็นมาตรฐานที่นักพัฒนาและ pen tester ต้องรู้</p>
+      <ul>
+        <li><strong>A01 - Broken Access Control</strong> — ผู้ใช้เข้าถึงข้อมูลที่ไม่มีสิทธิ์</li>
+        <li><strong>A02 - Cryptographic Failures</strong> — การเข้ารหัสที่อ่อนแอหรือไม่มีการเข้ารหัส</li>
+        <li><strong>A03 - SQL Injection</strong> — ใส่ SQL command ผ่าน input</li>
+        <li><strong>A04 - Insecure Design</strong> — ออกแบบระบบโดยไม่คำนึงถึง security</li>
+        <li><strong>A07 - XSS (Cross-Site Scripting)</strong> — inject JavaScript เข้าไปในหน้าเว็บ</li>
+      </ul>
+      <h3>SQL Injection ตัวอย่าง (Lab เท่านั้น)</h3>
+      <p>ใน form login ที่ไม่ได้ป้องกัน:</p>
+      <ul>
+        <li>username: <code>admin' --</code> — comment ออก password check</li>
+        <li>username: <code>' OR 1=1 --</code> — login ด้วยเงื่อนไขเป็นจริงเสมอ</li>
+      </ul>
+      <div class="info">💡 ฝึกได้ที่ <strong>DVWA</strong> (Damn Vulnerable Web Application) หรือ <strong>WebGoat</strong> ซึ่งออกแบบมาให้ทดสอบโดยเฉพาะ</div>
+      <h3>เครื่องมือ Web Pen Test</h3>
+      <ul>
+        <li><strong>Burp Suite</strong> — intercept HTTP requests, ทดสอบ web app</li>
+        <li><strong>OWASP ZAP</strong> — ฟรี, auto scan หาช่องโหว่เว็บ</li>
+        <li><strong>sqlmap</strong> — ทดสอบ SQL injection อัตโนมัติ</li>
+        <li><strong>Nikto</strong> — scan web server หาช่องโหว่ทั่วไป</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="lesson-network" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🌐 Network Security พื้นฐาน</h3>
+      <p>การเข้าใจ network เป็นรากฐานของ cybersecurity ทุกอย่างไหลผ่าน network ก่อนถึงปลายทาง</p>
+      <h3>Port ที่สำคัญ</h3>
+      <ul>
+        <li><strong>22</strong> — SSH (remote login)</li>
+        <li><strong>80/443</strong> — HTTP/HTTPS</li>
+        <li><strong>21</strong> — FTP</li>
+        <li><strong>3306</strong> — MySQL database</li>
+        <li><strong>3389</strong> — RDP (Windows remote desktop)</li>
+        <li><strong>8080</strong> — HTTP alternative</li>
+      </ul>
+      <h3>Wireshark เบื้องต้น</h3>
+      <ul>
+        <li><code>tcp.port == 80</code> — filter HTTP traffic</li>
+        <li><code>ip.addr == 192.168.1.1</code> — filter IP</li>
+        <li><code>http.request.method == "POST"</code> — ดู POST requests</li>
+        <li><code>dns</code> — ดู DNS queries</li>
+      </ul>
+      <div class="warning">⚠️ การดักฟัง traffic ของผู้อื่นโดยไม่ได้รับอนุญาตเป็นความผิดทางกฎหมาย ใช้บน network ของตัวเองเท่านั้น</div>
+    </div>
+  </div>
+
+  <div id="lesson-crypto" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🔐 Cryptography พื้นฐาน</h3>
+      <p>Cryptography คือศาสตร์การเข้ารหัสข้อมูล เป็นหัวใจของ security ทุกระบบ</p>
+      <h3>ประเภท Hashing ที่ควรรู้</h3>
+      <ul>
+        <li><strong>MD5</strong> — ล้าสมัย อย่าใช้กับ password</li>
+        <li><strong>SHA-256</strong> — มาตรฐานปัจจุบัน</li>
+        <li><strong>bcrypt</strong> — เหมาะกับ password hashing</li>
+        <li><strong>argon2</strong> — ใหม่ที่สุด ป้องกัน brute force ได้ดีที่สุด</li>
+      </ul>
+      <h3>คำสั่ง OpenSSL</h3>
+      <ul>
+        <li><code>openssl rand -hex 32</code> — generate random key</li>
+        <li><code>echo "text" | openssl dgst -sha256</code> — hash ข้อความ</li>
+        <li><code>openssl x509 -in cert.pem -text</code> — อ่าน certificate</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="lesson-ctf" class="lesson-content">
+    <div class="lesson-back" onclick="closeLesson()">← กลับไปบทเรียน</div>
+    <div class="lesson-body">
+      <h3>🏁 Capture The Flag คืออะไร?</h3>
+      <p>CTF คือการแข่งขัน cybersecurity ที่ผู้เข้าแข่งต้อง "หา flag" ซึ่งเป็นข้อความซ่อนอยู่ในโจทย์ที่มีช่องโหว่ตั้งใจ เป็นวิธีที่ดีที่สุดในการฝึก</p>
+      <h3>แพลตฟอร์มฝึก CTF</h3>
+      <ul>
+        <li><strong>TryHackMe</strong> — tryhackme.com — เหมาะมือใหม่ มีคำแนะนำทีละขั้น</li>
+        <li><strong>HackTheBox</strong> — hackthebox.com — ท้าทายขึ้น มี machine จริง</li>
+        <li><strong>PicoCTF</strong> — picoctf.org — เน้นนักเรียน ฟรี</li>
+        <li><strong>CTFtime</strong> — ctftime.org — ปฏิทินการแข่ง CTF ทั่วโลก</li>
+        <li><strong>OverTheWire</strong> — wargames ฝึก Linux command line</li>
+      </ul>
+      <h3>หมวดหมู่ CTF ที่พบบ่อย</h3>
+      <ul>
+        <li><strong>Web</strong> — SQL injection, XSS, authentication bypass</li>
+        <li><strong>Crypto</strong> — ถอดรหัส cipher ต่างๆ</li>
+        <li><strong>Forensics</strong> — วิเคราะห์ไฟล์, image, log</li>
+        <li><strong>Reverse Engineering</strong> — วิเคราะห์ binary</li>
+        <li><strong>OSINT</strong> — หาข้อมูลจากแหล่งสาธารณะ</li>
+      </ul>
+      <div class="info">💡 เริ่มที่ TryHackMe room ชื่อ "Pre-Security" — ครอบคลุมทุก concept ที่จำเป็น ใช้เวลาประมาณ 40 ชั่วโมง</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TERMINAL ── -->
+<section id="terminal">
+  <div class="section-title">// Terminal Simulator</div>
+  <h2>ทดลองคำสั่ง Linux / Termux</h2>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px;">จำลองสภาพแวดล้อม terminal สำหรับฝึกคำสั่งโดยไม่ต้องติดตั้งอะไร พิมพ์ <code style="background:rgba(0,212,255,.1);color:var(--cyan);padding:2px 6px;border-radius:3px;">help</code> เพื่อดูคำสั่งที่รองรับ</p>
+  <div class="terminal-wrap">
+    <div class="terminal-header">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="terminal-title">cyberpath@simulator:~$</div>
+    </div>
+    <div class="terminal-output" id="termOut"></div>
+    <div class="terminal-input-row">
+      <span class="terminal-prompt-label">cyberpath@sim:~$</span>
+      <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="พิมพ์คำสั่ง..." />
+    </div>
+  </div>
+  <div class="terminal-hint">💡 ลอง: nmap, whois, ping, ls, whoami, help, clear</div>
+</section>
+
+<!-- ── TOOLS ── -->
+<section id="tools">
+  <div class="section-title">// เครื่องมือ</div>
+  <h2>เครื่องมือที่ใช้ใน Cybersecurity</h2>
+  <div class="tools-grid">
+
+    <div class="tool-card">
+      <h3>nmap</h3>
+      <div class="tool-desc">Network scanner — สแกน port, service, OS ของ target ใช้ได้ใน Termux และ Linux</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('nmap -sV scanme.nmap.org')">
+          nmap -sV scanme.nmap.org
+          <span class="cmd-desc">scan service version (ตัวอย่าง host ที่อนุญาต)</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('nmap -A 192.168.1.1')">
+          nmap -A 192.168.1.1
+          <span class="cmd-desc">aggressive scan local network</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('nmap -p 80,443 target')">
+          nmap -p 80,443 target
+          <span class="cmd-desc">scan เฉพาะ port ที่ระบุ</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <h3>Termux packages</h3>
+      <div class="tool-desc">แพ็กเกจยอดนิยมสำหรับ security testing บน Android ผ่าน Termux</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('pkg install nmap python git')">
+          pkg install nmap python git
+          <span class="cmd-desc">ติดตั้งเครื่องมือพื้นฐาน</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('pkg install hydra')">
+          pkg install hydra
+          <span class="cmd-desc">password cracking tool (lab only)</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('termux-setup-storage')">
+          termux-setup-storage
+          <span class="cmd-desc">ขอสิทธิ์เข้าถึง storage</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <h3>whois / dig</h3>
+      <div class="tool-desc">เครื่องมือ OSINT สำหรับค้นหาข้อมูลโดเมน, DNS record และเจ้าของ IP</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('whois google.com')">
+          whois google.com
+          <span class="cmd-desc">ดูข้อมูล domain registration</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('dig google.com ANY')">
+          dig google.com ANY
+          <span class="cmd-desc">ดู DNS records ทั้งหมด</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('nslookup -type=MX gmail.com')">
+          nslookup -type=MX gmail.com
+          <span class="cmd-desc">ค้นหา mail server</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <h3>netstat / ss</h3>
+      <div class="tool-desc">ดู connection ที่เปิดอยู่บนเครื่อง ใช้ตรวจสอบว่ามี process ผิดปกติหรือไม่</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('netstat -tulpn')">
+          netstat -tulpn
+          <span class="cmd-desc">ดู port ที่กำลัง listen ทั้งหมด</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('ss -s')">
+          ss -s
+          <span class="cmd-desc">สรุป socket statistics</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <h3>hashcat / john</h3>
+      <div class="tool-desc">เครื่องมือ password recovery ใช้ทดสอบความแข็งแกร่งของ password hash</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('hashcat -m 0 hash.txt wordlist.txt')">
+          hashcat -m 0 hash.txt wordlist.txt
+          <span class="cmd-desc">crack MD5 hash ด้วย wordlist</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt')">
+          john --wordlist=rockyou.txt hash.txt
+          <span class="cmd-desc">crack hash ด้วย john the ripper</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <h3>curl / wget</h3>
+      <div class="tool-desc">เครื่องมือ HTTP ที่ใช้ทดสอบ API, ดู header, และส่ง request แบบกำหนดเอง</div>
+      <div class="tool-examples">
+        <div class="tool-cmd" onclick="runToolCmd('curl -I https://example.com')">
+          curl -I https://example.com
+          <span class="cmd-desc">ดู HTTP headers</span>
+        </div>
+        <div class="tool-cmd" onclick="runToolCmd('curl -X POST -d \'data=test\' https://target/api')">
+          curl -X POST -d 'data=test' url
+          <span class="cmd-desc">ส่ง POST request</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── QUIZ ── -->
+<section id="quiz">
+  <div class="section-title">// ทดสอบความรู้</div>
+  <h2>แบบทดสอบ Cybersecurity</h2>
+  <div class="quiz-wrap">
+    <div id="quizContainer"></div>
+    <div class="quiz-score" id="quizScore">
+      <div class="score-num" id="scoreNum">0/10</div>
+      <div class="score-label" id="scoreLabel">คะแนนของคุณ</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="scoreBar" style="width:0%"></div></div>
+      <button class="btn btn-primary" onclick="restartQuiz()">ทำใหม่อีกครั้ง</button>
+    </div>
+  </div>
+</section>
+
+<script>
+// ─── NAV ───
+function showSection(id, el) {
+  document.querySelectorAll('section, #home').forEach(s => s.classList.remove('visible'));
+  document.getElementById(id).classList.add('visible');
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (id === 'quiz' && !quizBuilt) buildQuiz();
+}
+
+// ─── LESSONS ───
+function openLesson(id) {
+  document.getElementById('modules-list').style.display = 'none';
+  document.querySelectorAll('.lesson-content').forEach(l => l.classList.remove('visible'));
+  document.getElementById('lesson-' + id).classList.add('visible');
+}
+function closeLesson() {
+  document.getElementById('modules-list').style.display = 'block';
+  document.querySelectorAll('.lesson-content').forEach(l => l.classList.remove('visible'));
+}
+
+// ─── TERMINAL ───
+const termOut = document.getElementById('termOut');
+const termInput = document.getElementById('termInput');
+let history = [], histIdx = -1;
+let fs = {
+  '~': ['tools/', 'notes.txt', 'scan_results/'],
+  '~/tools': ['nmap', 'wireshark', 'burpsuite'],
+  '~/scan_results': ['result_192.168.txt', 'web_scan.txt']
+};
+let cwd = '~';
+
+const commands = {
+  help: () => [
+    {t:'info', v:'╔═════════════════════════════════════╗'},
+    {t:'info', v:'║    CyberPath Terminal Simulator     ║'},
+    {t:'info', v:'╚═════════════════════════════════════╝'},
+    {t:'out', v:''},
+    {t:'line', v:'คำสั่งที่รองรับ:'},
+    {t:'out', v:'  nmap [options] [target]   — network scanner'},
+    {t:'out', v:'  whois [domain]            — domain lookup'},
+    {t:'out', v:'  ping [host]               — ping host'},
+    {t:'out', v:'  dig [domain]              — DNS lookup'},
+    {t:'out', v:'  curl -I [url]             — HTTP headers'},
+    {t:'out', v:'  ls [-la]                  — list files'},
+    {t:'out', v:'  cat [file]                — read file'},
+    {t:'out', v:'  cd [dir]                  — change directory'},
+    {t:'out', v:'  pwd                       — current path'},
+    {t:'out', v:'  whoami                    — current user'},
+    {t:'out', v:'  uname -a                  — system info'},
+    {t:'out', v:'  ps aux                    — running processes'},
+    {t:'out', v:'  netstat -tulpn            — open ports'},
+    {t:'out', v:'  pkg install [pkg]         — install package (Termux)'},
+    {t:'out', v:'  hash [algo] [text]        — compute hash'},
+    {t:'out', v:'  clear                     — clear terminal'},
+    {t:'out', v:'  banner                    — show banner'},
+  ],
+  whoami: () => [{t:'line', v:'cyberpath-student'}],
+  pwd: () => [{t:'line', v: cwd.replace('~', '/home/cyberpath')}],
+  uname: (args) => args.includes('-a') ? [{t:'line', v:'Linux cyberpath-sim 6.1.0-kali #1 SMP Debian x86_64 GNU/Linux'}] : [{t:'line', v:'Linux'}],
+  clear: () => { termOut.innerHTML = ''; return []; },
+  banner: () => [
+    {t:'cyan', v:'  ██████╗██╗   ██╗██████╗ ███████╗██████╗'},
+    {t:'cyan', v:' ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗'},
+    {t:'cyan', v:' ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝'},
+    {t:'cyan', v:' ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗'},
+    {t:'cyan', v:' ╚██████╗   ██║   ██████╔╝███████╗██║  ██║'},
+    {t:'cyan', v:'  ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝'},
+    {t:'green', v:'  PATH — เรียน Cybersecurity ถูกกฎหมาย v1.0'},
+  ],
+  ls: (args) => {
+    const dir = fs[cwd] || [];
+    if (args.includes('-la') || args.includes('-l')) {
+      return [{t:'line', v:'total ' + dir.length}].concat(dir.map(f => ({
+        t: f.endsWith('/') ? 'cyan' : 'out',
+        v: (f.endsWith('/') ? 'drwxr-xr-x' : '-rw-r--r--') + '  1 cyberpath  4096 Jun 10 2026 ' + f
+      })));
+    }
+    return dir.length ? [{t:'line', v: dir.join('  ')}] : [{t:'muted', v:'(empty)'}];
+  },
+  cd: (args) => {
+    const d = args[0] || '~';
+    const target = d === '..' ? '~' : (d.startsWith('~') ? d : cwd + '/' + d.replace('/',''));
+    if (fs[target] !== undefined) { cwd = target; return []; }
+    return [{t:'err', v:'-bash: cd: ' + d + ': No such file or directory'}];
+  },
+  cat: (args) => {
+    const file = args[0];
+    const fakeFiles = {
+      'notes.txt': ['# My Cybersecurity Notes', 'Recon → Scan → Exploit → Post-Exploit → Report', '', 'Tools: nmap, burpsuite, metasploit', 'Practice: TryHackMe, HackTheBox'],
+      'result_192.168.txt': ['Host: 192.168.1.1', 'PORT   STATE SERVICE', '22/tcp open  ssh', '80/tcp open  http', '443/tcp open  https']
+    };
+    if (fakeFiles[file]) return fakeFiles[file].map(l => ({t:'out', v:l}));
+    return [{t:'err', v:'cat: ' + file + ': No such file or directory'}];
+  },
+  ping: (args) => {
+    const host = args[0];
+    if (!host) return [{t:'err', v:'Usage: ping [host]'}];
+    const safe = ['scanme.nmap.org', 'localhost', '127.0.0.1', '8.8.8.8'];
+    if (!safe.includes(host) && !host.match(/^192\.168\./)) {
+      return [{t:'warn', v:'[sim] จำลองการ ping ' + host + ' ...'},
+              {t:'line', v:'PING ' + host + ': 56 bytes'},
+              {t:'out', v:'64 bytes from ' + host + ': icmp_seq=1 ttl=53 time=12.4 ms'},
+              {t:'out', v:'64 bytes from ' + host + ': icmp_seq=2 ttl=53 time=11.9 ms'},
+              {t:'out', v:'--- ' + host + ' ping statistics ---'},
+              {t:'out', v:'2 packets transmitted, 2 received, 0% packet loss'}];
+    }
+    return [{t:'line', v:'PING ' + host + ' (127.0.0.1): 56 data bytes'},
+            {t:'out', v:'64 bytes: icmp_seq=0 ttl=64 time=0.065 ms'},
+            {t:'green', v:'1 packets transmitted, 1 received, 0% packet loss'}];
+  },
+  nmap: (args) => {
+    if (!args.length) return [{t:'err', v:'Usage: nmap [options] [target]\nลอง: nmap -sV scanme.nmap.org'}];
+    const target = args[args.length - 1];
+    return [
+      {t:'warn', v:'[sim] Starting Nmap 7.94 — https://nmap.org'},
+      {t:'out', v:'Nmap scan report for ' + target},
+      {t:'out', v:'Host is up (0.0023s latency).'},
+      {t:'out', v:''},
+      {t:'line', v:'PORT     STATE  SERVICE  VERSION'},
+      {t:'green', v:'22/tcp   open   ssh      OpenSSH 8.2p1'},
+      {t:'green', v:'80/tcp   open   http     Apache 2.4.41'},
+      {t:'green', v:'443/tcp  open   https    nginx 1.18.0'},
+      {t:'out', v:'8080/tcp closed http-proxy'},
+      {t:'out', v:''},
+      {t:'line', v:'Nmap done: 1 IP address (1 host up) scanned in 2.31 seconds'},
+      {t:'warn', v:'[sim] ผลลัพธ์เป็นการจำลอง ไม่ใช่ข้อมูลจริง'}
+    ];
+  },
+  whois: (args) => {
+    const domain = args[0];
+    if (!domain) return [{t:'err', v:'Usage: whois [domain]'}];
+    return [
+      {t:'warn', v:'[sim] Querying WHOIS for ' + domain},
+      {t:'out', v:'Domain Name: ' + domain.toUpperCase()},
+      {t:'out', v:'Registrar: Example Registrar Inc.'},
+      {t:'out', v:'Updated Date: 2024-01-15'},
+      {t:'out', v:'Creation Date: 2000-01-01'},
+      {t:'out', v:'Expiry Date: 2025-01-01'},
+      {t:'out', v:'Name Server: ns1.' + domain},
+      {t:'out', v:'Name Server: ns2.' + domain},
+      {t:'warn', v:'[sim] ผลลัพธ์เป็นการจำลอง'}
+    ];
+  },
+  dig: (args) => {
+    const domain = args[0] || 'example.com';
+    return [
+      {t:'line', v:'; <<>> DiG 9.18 <<>> ' + domain},
+      {t:'out', v:';; ANSWER SECTION:'},
+      {t:'green', v: domain + '.  300  IN  A  93.184.216.34'},
+      {t:'green', v: domain + '.  300  IN  MX 10 mail.' + domain + '.'},
+      {t:'out', v:';; Query time: 22 msec'},
+      {t:'warn', v:'[sim] ผลลัพธ์เป็นการจำลอง'}
+    ];
+  },
+  curl: (args) => {
+    if (args.includes('-I') || args.includes('--head')) {
+      const url = args.find(a => a.startsWith('http')) || 'https://example.com';
+      return [
+        {t:'line', v:'HTTP/2 200'},
+        {t:'out', v:'content-type: text/html; charset=UTF-8'},
+        {t:'out', v:'server: nginx/1.18.0'},
+        {t:'out', v:'x-xss-protection: 1; mode=block'},
+        {t:'out', v:'x-frame-options: SAMEORIGIN'},
+        {t:'out', v:'strict-transport-security: max-age=31536000'},
+        {t:'warn', v:'[sim] Header จำลอง'}
+      ];
+    }
+    return [{t:'warn', v:'[sim] ลอง: curl -I https://example.com'}];
+  },
+  ps: () => [
+    {t:'line', v:'PID   USER       COMMAND'},
+    {t:'out', v:'1     root       /sbin/init'},
+    {t:'out', v:'234   cyberpath  bash'},
+    {t:'out', v:'412   cyberpath  /usr/bin/python3 scan.py'},
+    {t:'out', v:'501   root       sshd: /usr/sbin/sshd'},
+  ],
+  netstat: (args) => [
+    {t:'line', v:'Proto  Local Address          State'},
+    {t:'green', v:'tcp    0.0.0.0:22             LISTEN'},
+    {t:'green', v:'tcp    0.0.0.0:80             LISTEN'},
+    {t:'green', v:'tcp    127.0.0.1:3306         LISTEN'},
+    {t:'out', v:'tcp    192.168.1.100:53124     ESTABLISHED'},
+    {t:'warn', v:'[sim] ผลลัพธ์จำลอง'}
+  ],
+  pkg: (args) => {
+    if (args[0] === 'install') {
+      const pkg = args.slice(1).join(' ');
+      return [
+        {t:'out', v:'Reading package lists...'},
+        {t:'out', v:'Fetching: https://packages.termux.dev/' + (args[1] || 'package')},
+        {t:'green', v:'✓ Installed: ' + pkg},
+        {t:'warn', v:'[sim] จำลองการติดตั้ง — ไม่ได้ติดตั้งจริง'}
+      ];
+    }
+    if (args[0] === 'update') return [{t:'line', v:'Fetching package lists...'},{t:'green', v:'All packages up to date. [sim]'}];
+    return [{t:'warn', v:'Usage: pkg install [package]'}];
+  },
+  hash: (args) => {
+    const algo = args[0], text = args.slice(1).join(' ');
+    if (!algo || !text) return [{t:'err', v:'Usage: hash [md5|sha256|sha1] [text]'}];
+    const fakes = {
+      'md5': 'd41d8cd98f00b204e9800998ecf8427e',
+      'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      'sha1': 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+    };
+    const hash = fakes[algo] || 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3';
+    return [{t:'line', v: algo.toUpperCase() + '(' + text + '):'}, {t:'green', v: hash}, {t:'warn', v:'[sim] hash จำลอง ไม่ใช่ค่าจริง'}];
+  }
+};
+
+function runCmd(input) {
+  const trimmed = input.trim();
+  if (!trimmed) return;
+  history.unshift(trimmed);
+  histIdx = -1;
+  appendLine({t:'prompt', v:'cyberpath@sim:' + cwd + '$ ' + trimmed});
+  const parts = trimmed.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const args = parts.slice(1);
+  const fn = commands[cmd];
+  if (fn) {
+    const out = fn(args);
+    out.forEach(l => appendLine(l));
+  } else {
+    appendLine({t:'err', v:'-bash: ' + cmd + ': command not found'});
+    appendLine({t:'muted', v:'พิมพ์ help เพื่อดูคำสั่งที่รองรับ'});
+  }
+  appendLine({t:'out', v:''});
+  termOut.scrollTop = termOut.scrollHeight;
+}
+
+function appendLine(line) {
+  const el = document.createElement('div');
+  const colors = {line:'var(--green)', out:'var(--text)', err:'var(--red)', info:'var(--cyan)', cyan:'var(--cyan)', warn:'var(--yellow)', green:'var(--green)', prompt:'var(--muted)', muted:'var(--muted)'};
+  el.style.color = colors[line.t] || 'var(--text)';
+  el.textContent = line.v;
+  termOut.appendChild(el);
+}
+
+function runToolCmd(cmd) {
+  showSection('terminal', document.querySelectorAll('nav a')[2]);
+  setTimeout(() => {
+    termInput.value = cmd;
+    runCmd(cmd);
+    termInput.value = '';
+    termInput.focus();
+  }, 100);
+}
+
+termInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { runCmd(termInput.value); termInput.value = ''; }
+  if (e.key === 'ArrowUp') { if (histIdx < history.length - 1) { histIdx++; termInput.value = history[histIdx]; } }
+  if (e.key === 'ArrowDown') { if (histIdx > 0) { histIdx--; termInput.value = history[histIdx]; } else { histIdx = -1; termInput.value = ''; } }
+});
+
+// Init terminal
+appendLine({t:'green', v:'CyberPath Terminal Simulator v1.0'});
+appendLine({t:'out', v:'พิมพ์ help เพื่อดูคำสั่งทั้งหมด'});
+appendLine({t:'out', v:''});
+
+// ─── QUIZ ───
+const quizData = [
+  {q:'SQL Injection คืออะไร?', opts:['การ inject ไวรัสเข้าระบบ','การส่ง SQL command ผ่าน input ที่ไม่ได้ sanitize','การ brute force รหัสผ่าน','การขโมย cookie'], ans:1, exp:'SQL Injection คือการที่ผู้โจมตีส่ง SQL command ผ่าน input field ที่ไม่ได้ป้องกัน ทำให้ database ทำงานตามคำสั่งที่ไม่ต้องการ'},
+  {q:'Port 22 ใช้สำหรับ service อะไร?', opts:['HTTP','FTP','SSH','DNS'], ans:2, exp:'Port 22 เป็น port มาตรฐานของ SSH (Secure Shell) ใช้สำหรับ remote login แบบเข้ารหัส'},
+  {q:'ข้อใดคือ Passive Recon?', opts:['nmap scan','การค้น WHOIS ของ domain','Ping flood','การ login brute force'], ans:1, exp:'Passive Recon คือการเก็บข้อมูล target โดยไม่สัมผัส target โดยตรง เช่น WHOIS lookup, Google Dorks'},
+  {q:'OWASP Top 10 คืออะไร?', opts:['รายชื่อ hacker 10 อันดับ','รายชื่อช่องโหว่เว็บที่พบบ่อยที่สุด','ซอฟต์แวร์ป้องกันไวรัส','มาตรฐานการ encrypt'], ans:1, exp:'OWASP Top 10 คือรายชื่อช่องโหว่ web application 10 อันดับที่พบบ่อย เป็นมาตรฐานที่นักพัฒนาและ pen tester ต้องรู้'},
+  {q:'Termux ควรดาวน์โหลดจากที่ไหน?', opts:['Google Play Store','Apple App Store','F-Droid','GitHub Releases'], ans:2, exp:'ควรดาวน์โหลด Termux จาก F-Droid เท่านั้น เพราะเวอร์ชันบน Play Store หยุดอัปเดตแล้วและมีช่องโหว่'},
+  {q:'Hash function ใดที่ควรใช้สำหรับเก็บ password?', opts:['MD5','SHA-1','bcrypt','Base64'], ans:2, exp:'bcrypt (และ argon2) ออกแบบมาสำหรับ password hashing โดยเฉพาะ มี work factor ที่ทำให้ brute force ยากขึ้น MD5 และ SHA-1 ล้าสมัยแล้ว'},
+  {q:'XSS ย่อมาจากอะไร?', opts:['Extra Secure Session','Cross-Site Scripting','eXternal Shell Script','Cross-Server Synchronize'], ans:1, exp:'XSS ย่อมาจาก Cross-Site Scripting คือการ inject JavaScript เข้าไปในหน้าเว็บเพื่อให้ผู้ใช้รายอื่น execute'},
+  {q:'CTF ย่อมาจากอะไร?', opts:['Computer Task Force','Capture The Flag','Cyber Threat Framework','Code Test Function'], ans:1, exp:'CTF ย่อมาจาก Capture The Flag คือการแข่งขัน cybersecurity ที่ต้องหา "flag" ซึ่งซ่อนอยู่ในโจทย์ที่มีช่องโหว่ตั้งใจ'},
+  {q:'คำสั่งใดใช้ดู port ที่เปิดอยู่บนเครื่อง Linux?', opts:['ls -la','ps aux','netstat -tulpn','cat /etc/passwd'], ans:2, exp:'netstat -tulpn แสดง port ที่กำลัง listen อยู่บนเครื่อง (-t=tcp, -u=udp, -l=listening, -p=process, -n=numeric)'},
+  {q:'แพลตฟอร์มใดเหมาะกับมือใหม่ที่สุดสำหรับฝึก cybersecurity?', opts:['HackTheBox','TryHackMe','Exploit-DB','Shodan'], ans:1, exp:'TryHackMe ออกแบบมาสำหรับมือใหม่โดยเฉพาะ มีคำแนะนำทีละขั้น และ room ที่ครอบคลุมตั้งแต่พื้นฐาน'},
+];
+
+let quizBuilt = false, currentQ = 0, score = 0;
+
+function buildQuiz() {
+  quizBuilt = true;
+  currentQ = 0; score = 0;
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('quizScore').classList.remove('show');
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-card';
+    div.id = 'qcard-' + i;
+    div.style.display = i === 0 ? 'block' : 'none';
+    div.innerHTML = `
+      <div class="quiz-num">ข้อที่ ${i+1} / ${quizData.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o, j) => `<button class="quiz-opt" onclick="answerQ(${i}, ${j})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-explain" id="qexp-${i}"></div>
+    `;
+    c.appendChild(div);
+  });
+}
+
+function answerQ(qi, oi) {
+  const q = quizData[qi];
+  const card = document.getElementById('qcard-' + qi);
+  const opts = card.querySelectorAll('.quiz-opt');
+  const exp = document.getElementById('qexp-' + qi);
+  opts.forEach(o => o.disabled = true);
+  opts[q.ans].classList.add('correct');
+  const correct = oi === q.ans;
+  if (!correct) opts[oi].classList.add('wrong');
+  else score++;
+  exp.textContent = (correct ? '✅ ถูกต้อง! ' : '❌ ผิด. ') + q.exp;
+  exp.className = 'quiz-explain show ' + (correct ? 'correct-e' : 'wrong-e');
+  setTimeout(() => {
+    if (qi < quizData.length - 1) {
+      document.getElementById('qcard-' + qi).style.display = 'none';
+      document.getElementById('qcard-' + (qi+1)).style.display = 'block';
+    } else {
+      showScore();
+    }
+  }, 1800);
+}
+
+function showScore() {
+  document.getElementById('quizContainer').style.display = 'none';
+  const s = document.getElementById('quizScore');
+  s.classList.add('show');
+  const pct = Math.round(score / quizData.length * 100);
+  document.getElementById('scoreNum').textContent = score + '/' + quizData.length;
+  const labels = { 100:'🏆 Perfect! มึงเก่งมาก', 70:'💪 ดีมาก! ยังมีอีกหน่อย', 40:'📚 ฝึกต่อไป เดี๋ยวก็เก่ง', 0:'🔰 ลองอ่านบทเรียนก่อนนะ' };
+  let lbl = labels[0];
+  if (pct === 100) lbl = labels[100];
+  else if (pct >= 70) lbl = labels[70];
+  else if (pct >= 40) lbl = labels[40];
+  document.getElementById('scoreLabel').textContent = lbl;
+  setTimeout(() => document.getElementById('scoreBar').style.width = pct + '%', 200);
+}
+
+function restartQuiz() {
+  document.getElementById('quizContainer').style.display = 'block';
+  buildQuiz();
+}
+</script>
+</body>
+</html>
